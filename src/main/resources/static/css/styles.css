@@ -1,0 +1,21 @@
+.block-content {
+    min-height: 200px;
+    padding: 5px;
+    margin-left: 205px;
+}
+
+.block-list-left-menu-buttom{
+    width: 90%;
+    margin: 3px auto;
+    padding: 2px;
+}
+.header-page{
+    height: 50px;
+    text-align: center;
+}
+.block-list-left {
+    float: left;
+    width: 200px;
+    text-align: center;
+}
+
