@@ -4,110 +4,70 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.Exception.NotFoundExeption;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.repository.RoleRepository;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements UserService {
-
+public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
 
-    private final RoleRepository roleRepository;
+    private final RoleServiceImpl roleService;
 
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
-
-    public UserServiceImpl(UserRepository userRepository,
-                           RoleRepository roleRepository,
-                           BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, RoleServiceImpl roleService) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
-
-
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = findUserByEmail(email);
-
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found");
-        }
-
-        return user;
-    }
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        User user = findUserByName(username);
-//
-//        if (user == null) {
-//            throw new UsernameNotFoundException("User not found");
-//        }
-//
-//        return user;
-//    }
-
-    @Override
-    @Transactional
-    public User findUserById(Long userId) {
-        Optional<User> userFromDb = userRepository.findById(userId);
-        if (userFromDb.isEmpty()) {
-            throw new NotFoundExeption();
-        }
-        return userFromDb.get();
+        this.roleService = roleService;
     }
 
     @Override
-    @Transactional
-    public User findUserByEmail(String email) {
+    public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
     @Override
-    @Transactional
-    public User findUserByName(String userName) {
-        return userRepository.findByName(userName);
-    }
-
-    @Override
-    @Transactional
-    public List<User> allUsers() {
+    public List<User> findAllUsers() {
         return userRepository.findAll();
     }
 
     @Override
     @Transactional
     public void saveUser(User user) {
-
-
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-        System.out.println("soxranilsa");
-
-    }
-
-    @Override
-    @Transactional
-    public void updateUser(User user) {
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         userRepository.save(user);
     }
 
     @Override
+    public User findByIdUser(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+    }
+
+    @Override
     @Transactional
-    public boolean deleteUser(Long userId) {
-        if (userRepository.findById(userId).isPresent()) {
-            userRepository.deleteById(userId);
-            return true;
+    public void updateUser(Long id, User user) {
+        user.setId(id);
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void deleteByIdUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.NEVER)
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = findByEmail(email);
+        if(user == null) {
+            throw new UsernameNotFoundException(String.format("User '%s' not found", email));
         }
-        return false;
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
+                roleService.mapRolesToAuthorities(user.getRoles()));
     }
-
 
 }

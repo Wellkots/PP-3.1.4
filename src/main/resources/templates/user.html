@@ -2,87 +2,78 @@
 <html lang="en"
       xmlns:th="http://thymeleaf.org>"
       xmlns:sec="http://www.springframework.org/security/tags">
-<head>
+  <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>User page</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-</head>
-<body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
-        crossorigin="anonymous"></script>
-<nav class="navbar navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-            <th th:text="${user.getEmail()}"></th>
-            with roles:
-            <td th:each="role : ${user.getRoles()}">
-
-                <span th:text="${role.getName()}">   </span>
-
-            </td>
-        </a>
-        <ul class="navbar-nav ml-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-                <a class="nav-link" href="/logout">Logout
-                </a>
-            </li>
-        </ul>
-    </div>
-</nav>
-<div class="container-fluid ">
-    <div class="row ">
-        <div class="col-2 bg-white pt-3 min-vh-100 px-0">
-            <div class="container-fluid px-0">
-                <ul class="nav flex-column nav-pills ">
-                    <div sec:authorize="${hasRole('ADMIN')}">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin">Admin</a>
-                        </li>
-                    </div>
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/user">User</a>
-                    </li>
-                </ul>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+  </head>
+  <body >
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <nav class="navbar navbar-dark bg-dark">
+    <span class="navbar-brand mb-0">
+        <strong><a th:text="${user.getEmail()}">...</a></strong>
+        <span class="text-start">with roles:
+            <a th:each="role : ${user.getRoles()}" th:text="${role.getStringRole() + ' '}"></a>
+        </span>
+    </span>
+        <ul class="navbar-nav px-4">
+            <div class="nav-item text-nowrap">
+                <a class="nav-link" href="/login">Logout</a>
             </div>
-        </div>
-        <div class="col  pt-3 h-100 min-vh-100 bg-light">
-            <!-- Admin panel -->
-            <div class="container-fluid">
-                <h1 class="display-6"><b>User information-page</b></h1>
+        </ul>
+    </nav>
+    <div class="container-fluid ">
+        <div class="row ">
+            <div class="col-2 bg-white pt-3 min-vh-100 px-0">
+                <div class="container-fluid px-0">
+                  <ul class="nav flex-column nav-pills ">
+                      <div sec:authorize="${hasRole('ADMIN')}">
+                          <li class="nav-item">
+                              <a class="nav-link" href="/admin">Admin</a>
+                          </li>
+                      </div>
+                    <li class="nav-item">
+                      <a class="nav-link active" aria-current="page" href="/user">User</a>
+                    </li>
+                  </ul>
+                </div>
+            </div>
+            <div class="col  pt-3 h-100 min-vh-100 bg-light">
+              <!-- <h2>Admin panel</h2> -->
+              <div class="container-fluid">
+                  <h1 class="display-6"><b>User information-page</b></h1>
                 <div class="container-fluid border pt-1 pb-0">
-                    <p class="text-start fs-4">About user</p>
+                  <p class="text-start fs-4">About user</p>
                 </div>
                 <div class="container-fluid bg-white py-3 px-4">
 
-                    <table class="table table-striped border-top">
-                        <thead>
-                        <tr>
-                            <th scope="col">ID</th>
-                            <th scope="col">First Name</th>
-                            <th scope="col">Last Name</th>
-                            <th scope="col">Age</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">Role</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td th:text="${user.getId}"></td>
-                            <td th:text="${user.getName}"></td>
-                            <td th:text="${user.getLastName}"></td>
-                            <td th:text="${user.getAge}"></td>
-                            <td th:text="${user.getEmail}"></td>
-                            <td><p th:each=" role : ${user.getRoles()}" th:utext="${role.getName()}"></p></td>
-                        </tr>
-                        </tbody>
-                    </table>
+                  <table class="table table-striped border-top">
+                    <thead>
+                      <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">First Name</th>
+                        <th scope="col">Last Name</th>
+                        <th scope="col">Age</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Role</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td th:text="${user.getId}"></td>
+                        <td th:text="${user.getFirstName}"></td>
+                        <td th:text="${user.getLastName}"></td>
+                        <td th:text="${user.getAge}"></td>
+                        <td th:text="${user.getEmail}"></td>
+                        <td th:text="${user.getRolesString}"></td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
+              </div>
             </div>
         </div>
     </div>
-</div>
-</body>
+  </body>
 </html>

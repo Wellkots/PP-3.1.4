@@ -1,16 +1,15 @@
 package ru.kata.spring.boot_security.demo.service;
 
+import org.springframework.security.core.GrantedAuthority;
 import ru.kata.spring.boot_security.demo.model.Role;
 
 import java.util.List;
-import java.util.Set;
 
 public interface RoleService {
-    void addRole(Role role);
 
-    List<Role> listRoles();
+    Role findRoleByName(String name);
 
-    Role getRoleByID(Long id);
+    List<Role> findAllRoles();
 
-    Set<Role> findRolesByName(String roleName);
+    List<? extends GrantedAuthority> mapRolesToAuthorities(List<Role> roles);
 }
